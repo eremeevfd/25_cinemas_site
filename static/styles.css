@@ -1,0 +1,22 @@
+.footer {
+  text-align: center;
+  font-size: 3em;
+  padding: 60px 0 20px 0;
+}
+
+.navbar-brand {
+  font-size: 3em;
+}
+
+.body {
+  margin: 0 auto;
+  padding-left: 30px;
+}
+
+.film {
+  height: 850px;
+}
+
+.description {
+  min-height: 85.5px;
+}

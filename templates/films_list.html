@@ -13,14 +13,14 @@
 
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-      <link rel="stylesheet" href="/static/css.css">
+      <link type="text/css" rel="stylesheet" href="/static/styles.css   ">
 
   </head>
 
-  <body>
+  <body class="body">
 
     <nav class="navbar">
-      <div class="container">
+      <div class="container navbar-container">
         <div class="navbar-header">
           <a class="navbar-brand" href="/">Что в кино</a>
         </div>
@@ -28,7 +28,7 @@
     </nav>
 
     {% for film in cinemas %}
-        <div class="container col-md-4" style="width: 400px; margin-top: 10px;">
+        <div class="container col-md-4 col-sm-4 film" style="width: 400px; margin: 0 auto;">
             <div>
                 <h3 style="display: flex; min-height: 78px">
                     <a href="{{ film[1]['film_url'] }}">{{ film[0] }}</a>
@@ -38,6 +38,9 @@
                 <a href="{{ film[1]['film_url'] }}">
                     <img height="500" width="350" src="{{ film[1]['poster_url'] }}">
                 </a>
+                <p class="lead description">
+                    {{ film[1]['film_description'] }}
+                </p>
                 <p class="lead">
                     Количество сеансов: {{  film[1]['cinema_shows'] }}
                 </p>
@@ -54,7 +57,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <div class="container-fluid col-md-12" style="margin: 160px 0px 0px -10px; padding: 20px">
+    <div class="container-fluid col-md-12 col-sm-12" style="margin: 160px 0px 0px -10px; padding: 20px">
         <div class="footer text-center">
             Настоящий сайт создан в исключительно учебных целях. Все сведения о фильмах взяты с сайта <a href="https://afisha.ru">Афиша</a>.
         </div>

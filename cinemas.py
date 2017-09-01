@@ -8,12 +8,12 @@ from requests.exceptions import Timeout, ConnectionError
 import sys
 from threading import Thread
 from queue import Queue
-import grequests
 import time
 
 
 MIN_NUMBER_OF_CINEMA_SHOWS = 30
 FILMS_COUNT = 10
+NUMBER_OF_ASYNC_WORKERS = 10
 
 
 logging.basicConfig(level='INFO')
@@ -39,19 +39,19 @@ class CinemaWorker(Thread):
 def get_top_films():
     afisha_page = fetch_afisha_page()
     films_cinemas_list = parse_afisha_list(afisha_page)
-    empty_list_info = []
+    cinemas_list_info = []
     films = get_films_list(films_cinemas_list)
     logger.info(len(films))
     queue = Queue()
-    for x in range(8):
-        worker = CinemaWorker(queue, empty_list_info)
+    for x in range(NUMBER_OF_ASYNC_WORKERS):
+        worker = CinemaWorker(queue, cinemas_list_info)
         worker.daemon = True
         worker.start()
     for film in films:
         queue.put(film)
     queue.join()
-    empty_list_info = sort_films_by_rating(empty_list_info)
-    return empty_list_info
+    cinemas_list_info = sort_films_by_rating(cinemas_list_info)
+    return cinemas_list_info[:FILMS_COUNT]
 
 
 def fetch_afisha_page():
@@ -74,6 +74,10 @@ def get_film_url(film):
     return film.find('h3', {'class': 'usetags'}).a['href']
 
 
+def find_film_description(film):
+    return film.find('div', {'class': 'm-disp-table'}).p.text
+
+
 def parse_afisha_list(raw_html):
     film_cinemas = defaultdict(dict)
     parsed_afisha_page = parse_page(raw_html)
@@ -83,6 +87,7 @@ def parse_afisha_list(raw_html):
         cinema_shows = count_cinema_shows(film)
         film_cinemas[film_title]['cinema_shows'] = cinema_shows
         film_cinemas[film_title]['film_url'] = get_film_url(film)
+        film_cinemas[film_title]['film_description'] = find_film_description(film)
     return film_cinemas
 
 
@@ -95,7 +100,13 @@ def find_film_id_in_search_response(search_response):
 
 
 def find_film_poster(film_id):
-    return 'https://st.kp.yandex.net/images/film_iphone/iphone360_%s.jpg' % film_id
+    iphone_poster_url = 'https://st.kp.yandex.net/images/film_iphone/iphone360_%s.jpg' % film_id
+    if 'None' in iphone_poster_url:
+        large_poster_url = 'https://www.kinopoisk.ru/images/film_big/%s.jpg' % film_id
+        return large_poster_url
+    return iphone_poster_url
+    # return 'https://st.kp.yandex.net/images/film_iphone/iphone360_%s.jpg' % film_id or\
+    #        'https://www.kinopoisk.ru/images/film_big/%s.jpg' % film_id
 
 
 def find_rating(parsed_rating_page):
