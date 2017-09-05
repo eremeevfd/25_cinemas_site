@@ -135,7 +135,6 @@ def fetch_movie_rating_and_votes_number(kinopoisk_session, film_id):
 
 def fetch_movie_info(movie_title):
     kinopoisk_session = requests.Session()
-    sleep(10)
     payload = {'first': 'yes', 'kp_query': movie_title}
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'}
