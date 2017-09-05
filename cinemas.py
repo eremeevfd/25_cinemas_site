@@ -43,7 +43,7 @@ def get_top_films():
     films = get_films_list(films_cinemas_list)
     logger.info(len(films))
     queue = Queue()
-    for x in range(NUMBER_OF_ASYNC_WORKERS):
+    for _ in range(NUMBER_OF_ASYNC_WORKERS):
         worker = CinemaWorker(queue, cinemas_list_info)
         worker.daemon = True
         worker.start()

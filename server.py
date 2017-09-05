@@ -13,7 +13,8 @@ app.config['DEBUG'] = True
 @app.route('/')
 def films_list():
     current_dir = os.path.dirname(__file__)
-    cache_dir = current_dir + '/cache/'
+    cwd = os.getcwd()
+    cache_dir = (current_dir or cwd) + '/cache/'
     cached_films = FileSystemCache(cache_dir=cache_dir, default_timeout=12 * 60 * 60)
     if not cached_films.get('cinemas'):
         with lock:
