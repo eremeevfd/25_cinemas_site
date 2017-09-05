@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import logging
 import re
 from collections import defaultdict
-from time import sleep
 from requests.exceptions import Timeout, ConnectionError
 import sys
 from threading import Thread
@@ -21,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 class CinemaWorker(Thread):
-    def __init__(self, queue, list):
+    def __init__(self, queue, cinemas_list):
         Thread.__init__(self)
         self.queue = queue
-        self.list = list
+        self.cinemas_list = cinemas_list
 
     def run(self):
         while True:
@@ -32,7 +31,8 @@ class CinemaWorker(Thread):
             if film_is_not_arthouse(film):
                 film_info = get_film_rating_and_votes_number(film)
                 logger.info(film_info)
-                self.list.append(film_info)
+                if film_info:
+                    self.cinemas_list.append(film_info)
             self.queue.task_done()
 
 
@@ -142,7 +142,7 @@ def fetch_movie_info(movie_title):
         search_response = kinopoisk_session.get('https://www.kinopoisk.ru/index.php', params=payload, headers=headers,
                                                 timeout=10)
     except (Timeout, ConnectionError):
-        sys.exit('No connection to kinopoisk.ru try later.')
+        return
     film_id = find_film_id_in_search_response(search_response)
     film_stats = fetch_movie_rating_and_votes_number(kinopoisk_session, film_id)
     poster_url = find_film_poster(film_id)
@@ -152,6 +152,8 @@ def fetch_movie_info(movie_title):
 
 def get_film_rating_and_votes_number(film):
     rating_and_votes_number = fetch_movie_info(film[0])
+    if rating_and_votes_number is None:
+        return
     film[1]['rating'] = rating_and_votes_number['rating']
     film[1]['votes_number'] = rating_and_votes_number['votes_number']
     film[1]['poster_url'] = rating_and_votes_number['poster_url']
